@@ -2,7 +2,7 @@ const floorLevel = 300;
 const heightCanvas = 1000;
 const lengthCanvas = 1500;
 
-const fr = 2000; //frameRate
+const fr = 9000; //frameRate
 const dt = 1/fr;
 
 //-------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ const k = 300;
 const kd = 0.9;
 const g = 9.8;
 
-const factModifRand = 3;
+const factModifRand = 0;
 const facteurDecoll = 5;
 const facteurFrott = 40;
 const vitesseSim = 300;
@@ -32,7 +32,7 @@ function setup(){
 }
 
 function draw(){
-    update();
+    //update();
 }
 
 function mouseClicked(){
@@ -41,8 +41,8 @@ function mouseClicked(){
 
 function update(){
     for(let i = 0; i<vitesseSim; i++){
-        //updatePhys(masses);
-        updatePhysTrap(masses);
+        updatePhys(masses);
+        //updatePhysTrap(masses);
     }
     
     updateDraw(masses);
@@ -198,11 +198,38 @@ function updatePositionTrap(masses){
 }
 
 function updatePhys(masses){
-    resetForce(masses);
-    updateForces(masses);
-    updateVitesse(masses);
-    checkAllCollision(masses);
-    updatePosition(masses);
+    // resetForce(masses);
+    // updateForces(masses);
+    // updateVitesse(masses);
+    // checkAllCollision(masses);
+    // updatePosition(masses);
+
+    for (let x=0; x<masses.length; x++){
+        for (let y=0; y<masses[0].length; y++){
+            masses[x][y].f = [0,0]; //reset force
+            
+            masses[x][y].addForcePesanteur();//   PESANTEUR
+            for(let i=-1; i<2; i++){
+                for(let j=-1; j<2; j++){
+                    if(x+i<masses.length && x+i>=0 && y+j<masses[0].length && y+j>=0 && (i!=0 || j!=0)){
+                        //masses[x][y].addForceDamping(masses[x+i][y+j]); //    DAMPING 
+                        
+                        if((i+j)%2 == 0){
+                            masses[x][y].addForceRaideurDiag(masses[x+i][y+j]); //RAIDEUR DIAG
+                        }
+                        else{
+                            masses[x][y].addForceRaideur(masses[x+i][y+j]); //RAIDEUR
+                        }
+                    }
+
+                }
+            }
+
+            masses[x][y].v = [integRect(masses[x][y].v[0], (masses[x][y].f[0]/masses[x][y].mass), dt), integRect(masses[x][y].v[1], (masses[x][y].f[1]/masses[x][y].mass), dt)]; // update vitesse
+            masses[x][y].checkCollision();
+            masses[x][y].pos = [integRect(masses[x][y].pos[0], masses[x][y].v[0], dt), integRect(masses[x][y].pos[1], masses[x][y].v[1], dt)];
+        }
+    }
     
 }
 

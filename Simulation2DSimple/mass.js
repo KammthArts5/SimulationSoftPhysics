@@ -3,9 +3,9 @@ class Mass{
         this.mass = 0.1;
         this.pos = [x+Math.random()*factModifRand-factModifRand,y+Math.random()*factModifRand-factModifRand];
         this.r = 5;
-        this.r0 = 10+Math.random()*factModifRand/3-factModifRand/3;
+        this.r0 = 12+Math.random()*factModifRand/3-factModifRand/3;
         this.r0diag = Math.sqrt(2*(this.r0**2));
-        this.v=[30, 0];
+        this.v=[0, 0];
         this.f=[0,0];
         
     }
@@ -19,7 +19,7 @@ class Mass{
     addForceRaideur(mass2){
         let dist = Math.sqrt(((this.pos[0]-mass2.pos[0])**2)+((this.pos[1]-mass2.pos[1])**2));
         let alpha;
-        if(dist > 0.1){
+        if(dist > 0.01){
             alpha = asin((mass2.pos[1]-this.pos[1])/dist);
         }
         else{
@@ -40,7 +40,7 @@ class Mass{
     addForceRaideurDiag(mass2){
         let dist = Math.sqrt(((this.pos[0]-mass2.pos[0])**2)+((this.pos[1]-mass2.pos[1])**2));
         let alpha;
-        if(dist > 0.1){
+        if(dist > 0.01){
             alpha = asin((mass2.pos[1]-this.pos[1])/dist);
         }
         else{
