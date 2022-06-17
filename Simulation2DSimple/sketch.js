@@ -6,8 +6,8 @@ const fr = 200; //frameRate
 const dt = 1/fr;
 
 //-------------------------------------------------------------------------------
-const k = 300;
-const kd = 20;
+const k = 200;
+const kd = 5;
 const g = 9.8;
 
 const factModifRand = 0;
@@ -42,13 +42,13 @@ function mouseClicked(){
 
 function update(){
     for(let i = 0; i<vitesseSim; i++){
-        updatePhys(masses);
-        //updatePhysTrap(masses);
+        updateForces(masses);
+
+        //updateInteg(masses);
+        //updateIntegTrap(masses);
+        updateIntegSimpson(masses)
     }
-    
-    let dist = Math.sqrt(((masses[0][0].pos[0]-masses[0][1].pos[0])**2)+((masses[0][0].pos[1]-masses[0][1].pos[1])**2));
-    let fBrut = -k*(dist-(masses[0][0].r0+masses[0][1].r0));
-    
+        
     console.log(masses[0][10].pos);
 
     updateDraw(masses);
@@ -118,108 +118,11 @@ function updateDraw(masses){
 function updateForces(masses){
     for (let x=0; x<masses.length; x++){
         for (let y=0; y<masses[0].length; y++){
-
-            
-            for(let i=-1; i<2; i++){
-                for(let j=-1; j<2; j++){
-                    //masses[x][y].addForcePesanteur(); //   PESANTEUR
-
-                    if(x+i<masses.length && x+i>=0 && y+j<masses[0].length && y+j>=0 && (i!=0 || j!=0)){
-                        //masses[x][y].addForceDamping(masses[x+i][y+j]); //    DAMPING 
-                        
-                        if((i+j)%2 == 0){
-                            masses[x][y].addForceRaideurDiag(masses[x+i][y+j]); //RAIDEUR DIAG
-                        }
-                        else{
-                            masses[x][y].addForceRaideur(masses[x+i][y+j]); //RAIDEUR
-                        }
-                    }
-
-                }
-            }
-
-        }   
-    }
-}
-
-function checkAllCollision(masses){
-    for (let x=0; x<masses.length; x++){
-        for (let y=0; y<masses[0].length; y++){
-            masses[x][y].checkCollision();
-        }   
-    }
-}
-
-
-
-
-//---------------------UPDADE VARIABLES PHYS ------------------------------
-function resetForce(masses){
-    for (let i=0; i<masses.length; i++){
-        for (let j=0; j<masses[0].length; j++){
-            masses[i][j].f = [0,0];
-        }
-    }
-}
-
-function saveState(masses, doubleSave){
-    for (let i=0; i<masses.length; i++){
-        for (let j=0; j<masses[0].length; j++){
-            if(doubleSave){
-                masses[i][j].save2();
-            }
-            masses[i][j].save();
-        }
-    }
-}
-
-
-function updateVitesse(masses){
-    for (let i=0; i<masses.length; i++){
-        for (let j=0; j<masses[0].length; j++){
-            masses[i][j].v = [integRect(masses[i][j].v[0], (masses[i][j].f[0]/masses[i][j].mass), dt), integRect(masses[i][j].v[1], (masses[i][j].f[1]/masses[i][j].mass), dt)];
-        }
-    }
-}
-
-function updatePosition(masses){
-    for (let i=0; i<masses.length; i++){
-        for (let j=0; j<masses[0].length; j++){
-            masses[i][j].pos = [integRect(masses[i][j].pos[0], masses[i][j].v[0], dt), integRect(masses[i][j].pos[1], masses[i][j].v[1], dt)];
-        }
-    }
-}
-
-function updateVitesseTrap(masses){
-    for (let i=0; i<masses.length; i++){
-        for (let j=0; j<masses[0].length; j++){
-            masses[i][j].v = [integTrapeze(masses[i][j].v[0], masses[i][j].f[0]/masses[i][j].mass, masses[i][j].saveF[0]/masses[i][j].mass, dt), integTrapeze(masses[i][j].v[1], masses[i][j].f[1]/masses[i][j].mass, masses[i][j].saveF[1]/masses[i][j].mass, dt)];
-        }
-    }
-}
-
-function updatePositionTrap(masses){
-    for (let i=0; i<masses.length; i++){
-        for (let j=0; j<masses[0].length; j++){
-            masses[i][j].pos = [integTrapeze(masses[i][j].pos[0], masses[i][j].v[0], masses[i][j].saveV[0], dt), integTrapeze(masses[i][j].pos[1], masses[i][j].v[1], masses[i][j].saveV[1], dt)];
-        }
-    }
-}
-
-function updatePhys(masses){
-    // resetForce(masses);
-    // updateForces(masses);
-    // updateVitesse(masses);
-    // checkAllCollision(masses);
-    // updatePosition(masses);
-
-    for (let x=0; x<masses.length; x++){
-        for (let y=0; y<masses[0].length; y++){
             masses[x][y].f = [0,0]; //reset force
-            
-            masses[x][y].addForcePesanteur();//   PESANTEUR
+            masses[x][y].addForcePesanteur(); //   PESANTEUR
             for(let i=-1; i<2; i++){
                 for(let j=-1; j<2; j++){
+                    
                     if(x+i<masses.length && x+i>=0 && y+j<masses[0].length && y+j>=0 && (i!=0 || j!=0)){
                         masses[x][y].addForceDamping(masses[x+i][y+j]); //    DAMPING 
                         
@@ -230,32 +133,55 @@ function updatePhys(masses){
                             masses[x][y].addForceRaideur(masses[x+i][y+j]); //RAIDEUR
                         }
                     }
+
                 }
             }
-        }
+
+        }   
     }
+}
+
+
+
+
+//---------------------UPDADE VARIABLES PHYS ------------------------------
+
+function updateInteg(masses){
     for (let x=0; x<masses.length; x++){
         for (let y=0; y<masses[0].length; y++){
-            masses[x][y].v = [integRect(masses[x][y].v[0], (masses[x][y].f[0]/masses[x][y].mass), dt), integRect(masses[x][y].v[1], (masses[x][y].f[1]/masses[x][y].mass), dt)]; // update vitesse
-            //masses[x][y].v = [masses[x][y].v[0] + (masses[x][y].f[0]/masses[x][y].mass)*dt, masses[x][y].v[1] + (masses[x][y].f[1]/masses[x][y].mass)*dt];
+            masses[x][y].updateAccel(); //update acceleration (F/m)
+            masses[x][y].v = integRectVect(masses[x][y].v, masses[x][y].a, dt); // Update vitesse
             masses[x][y].checkCollision();
-            masses[x][y].pos = [integRect(masses[x][y].pos[0], masses[x][y].v[0], dt), integRect(masses[x][y].pos[1], masses[x][y].v[1], dt)];
-            //masses[x][y].pos = [masses[x][y].pos[0] + masses[x][y].v[0]*dt, masses[x][y].pos[1] + masses[x][y].v[1]*dt];
-            
+            masses[x][y].pos = integRectVect(masses[x][y].pos, masses[x][y].v, dt); //update position
+        }
+    }  
+}
+
+function updateIntegTrap(masses){
+
+    for (let x=0; x<masses.length; x++){
+        for (let y=0; y<masses[0].length; y++){
+            masses[x][y].save();
+            masses[x][y].updateAccel(); //update acceleration (F/m)
+            masses[x][y].v = integTrapezeVect(masses[x][y].v, masses[x][y].a, masses[x][y].saveA, dt); // Update vitesse
+            masses[x][y].checkCollision();
+            masses[x][y].pos = integTrapezeVect(masses[x][y].pos, masses[x][y].v, masses[x][y].saveV, dt); //update position
         }
     }
-        
     
 }
 
-function updatePhysTrap(masses){
-    resetForce(masses);
-    saveState(masses, false);
-    updateForces(masses);
-    updateVitesseTrap(masses);
-    checkAllCollision(masses);
-    updatePositionTrap(masses);
-    
+function updateIntegSimpson(masses){
+    for (let x=0; x<masses.length; x++){
+        for (let y=0; y<masses[0].length; y++){
+            masses[x][y].save2();
+            masses[x][y].save();
+            masses[x][y].updateAccel(); //update acceleration (F/m)
+            masses[x][y].v = integSimpsonVect(masses[x][y].v, masses[x][y].save2A, masses[x][y].saveA, masses[x][y].a, dt); // Update vitesse
+            masses[x][y].checkCollision();
+            masses[x][y].pos = integSimpsonVect(masses[x][y].pos, masses[x][y].save2V, masses[x][y].saveV, masses[x][y].v, dt); //update position
+        }
+    }
 }
 
 

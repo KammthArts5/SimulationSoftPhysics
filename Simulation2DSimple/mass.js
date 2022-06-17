@@ -5,8 +5,15 @@ class Mass{
         this.r = 5;
         this.r0 = 11+Math.random()*factModifRand/3-factModifRand/3;
         this.r0diag = Math.sqrt(2*(this.r0**2));
-        this.v=[0, 0];
+        this.v=[30, 0];
         this.f=[0,0];
+        this.a=[0,0];
+        this.savePos =[0,0];
+        this.saveV = [0,0];
+        this.saveA = [0,0];
+        this.save2Pos =[0,0];
+        this.save2V = [0,0];
+        this.save2A = [0,0];
         
     }
 
@@ -14,6 +21,10 @@ class Mass{
         noStroke();
         fill('red');
         circle(this.pos[0], this.pos[1], this.r);
+    }
+
+    updateAccel(){
+        this.a = [this.f[0]/this.mass, this.f[1]/this.mass];
     }
 
     addForceRaideur(mass2){
@@ -88,13 +99,13 @@ class Mass{
     save(){
         this.savePos = this.pos;
         this.saveV = this.v;
-        this.saveF = this.f;
+        this.saveA = this.a;
     }
 
     save2(){
         this.save2Pos = this.savepos;
         this.save2V = this.saveV;
-        this.save2F = this.saveF;
+        this.save2A = this.saveA;
 
     }
 }
