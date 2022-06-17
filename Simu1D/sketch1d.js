@@ -118,12 +118,11 @@ function updateForce(mass1){
 }
 
 function updateVitesse(mass1){
-    mass1.vit = mass1.vit + (mass1.f/mass1.mass)*dt;
-    
+    mass1.vit = integRect(mass1.vit, mass1.f/mass1.mass, dt);    
 }
 
 function updatePosition(mass1){
-    mass1.pos = mass1.pos + mass1.vit*dt;
+    mass1.pos = integRect(mass1.pos, mass1.vit, dt);
 }
 
 function updatePhys(mass1){

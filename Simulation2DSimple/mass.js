@@ -7,9 +7,7 @@ class Mass{
         this.r0diag = Math.sqrt(2*(this.r0**2));
         this.v=[30, 0];
         this.f=[0,0];
-        this.savePos = [0,0];
-        this.saveV = [0,0];
-        this.saveF = [0,0];
+        
     }
 
     initialiseMass(){
@@ -91,5 +89,12 @@ class Mass{
         this.savePos = this.pos;
         this.saveV = this.v;
         this.saveF = this.f;
+    }
+
+    save2(){
+        this.save2Pos = this.savepos;
+        this.save2V = this.saveV;
+        this.save2F = this.saveF;
+
     }
 }

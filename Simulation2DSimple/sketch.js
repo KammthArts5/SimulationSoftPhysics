@@ -13,7 +13,7 @@ const g = 9.8;
 const factModifRand = 3;
 const facteurDecoll = 5;
 const facteurFrott = 40;
-const vitesseSim = 70;
+const vitesseSim = 300;
 //-----------------------------------------------------------------------------
 
 let masses;
@@ -32,6 +32,10 @@ function setup(){
 }
 
 function draw(){
+    update();
+}
+
+function mouseClicked(){
     update();
 }
 
@@ -149,10 +153,13 @@ function resetForce(masses){
     }
 }
 
-function saveState(masses){
+function saveState(masses, doubleSave){
     for (let i=0; i<masses.length; i++){
         for (let j=0; j<masses[0].length; j++){
-           masses[i][j].save();
+            if(doubleSave){
+                masses[i][j].save2();
+            }
+            masses[i][j].save();
         }
     }
 }
@@ -161,7 +168,7 @@ function saveState(masses){
 function updateVitesse(masses){
     for (let i=0; i<masses.length; i++){
         for (let j=0; j<masses[0].length; j++){
-            masses[i][j].v = [masses[i][j].v[0] + (masses[i][j].f[0]/masses[i][j].mass)*dt, masses[i][j].v[1] + (masses[i][j].f[1]/masses[i][j].mass)*dt];
+            masses[i][j].v = [integRect(masses[i][j].v[0], (masses[i][j].f[0]/masses[i][j].mass), dt), integRect(masses[i][j].v[1], (masses[i][j].f[1]/masses[i][j].mass), dt)];
         }
     }
 }
@@ -169,7 +176,7 @@ function updateVitesse(masses){
 function updatePosition(masses){
     for (let i=0; i<masses.length; i++){
         for (let j=0; j<masses[0].length; j++){
-            masses[i][j].pos = [masses[i][j].pos[0] + masses[i][j].v[0]*dt, masses[i][j].pos[1] + masses[i][j].v[1]*dt];
+            masses[i][j].pos = [integRect(masses[i][j].pos[0], masses[i][j].v[0], dt), integRect(masses[i][j].pos[1], masses[i][j].v[1], dt)];
         }
     }
 }
@@ -177,7 +184,7 @@ function updatePosition(masses){
 function updateVitesseTrap(masses){
     for (let i=0; i<masses.length; i++){
         for (let j=0; j<masses[0].length; j++){
-            masses[i][j].v = [masses[i][j].v[0] + ((masses[i][j].f[0]+masses[i][j].saveF[0])/(2*masses[i][j].mass))*dt, masses[i][j].v[1] + ((masses[i][j].f[1]+masses[i][j].saveF[1])/(2*masses[i][j].mass))*dt];
+            masses[i][j].v = [integTrapeze(masses[i][j].v[0], masses[i][j].f[0]/masses[i][j].mass, masses[i][j].saveF[0]/masses[i][j].mass, dt), integTrapeze(masses[i][j].v[1], masses[i][j].f[1]/masses[i][j].mass, masses[i][j].saveF[1]/masses[i][j].mass, dt)];
         }
     }
 }
@@ -185,7 +192,7 @@ function updateVitesseTrap(masses){
 function updatePositionTrap(masses){
     for (let i=0; i<masses.length; i++){
         for (let j=0; j<masses[0].length; j++){
-            masses[i][j].pos = [masses[i][j].pos[0] + ((masses[i][j].v[0]+masses[i][j].saveV[0])/2)*dt, masses[i][j].pos[1] + ((masses[i][j].v[1]+masses[i][j].saveV[1])/2)*dt];
+            masses[i][j].pos = [integTrapeze(masses[i][j].pos[0], masses[i][j].v[0], masses[i][j].saveV[0], dt), integTrapeze(masses[i][j].pos[1], masses[i][j].v[1], masses[i][j].saveV[1], dt)];
         }
     }
 }
@@ -201,7 +208,7 @@ function updatePhys(masses){
 
 function updatePhysTrap(masses){
     resetForce(masses);
-    saveState(masses);
+    saveState(masses, false);
     updateForces(masses);
     updateVitesseTrap(masses);
     checkAllCollision(masses);
