@@ -2,22 +2,23 @@ const floorLevel = 300;
 const heightCanvas = 1000;
 const lengthCanvas = 1500;
 
-const fr = 9000; //frameRate
+const fr = 200; //frameRate
 const dt = 1/fr;
 
 //-------------------------------------------------------------------------------
 const k = 300;
-const kd = 0.9;
+const kd = 20;
 const g = 9.8;
 
 const factModifRand = 0;
 const facteurDecoll = 5;
 const facteurFrott = 40;
-const vitesseSim = 300;
+const vitesseSim = 50;
 //-----------------------------------------------------------------------------
 
 let masses;
 
+let booltampon = false;
 
 
 function setup(){
@@ -32,7 +33,7 @@ function setup(){
 }
 
 function draw(){
-    //update();
+    update();
 }
 
 function mouseClicked(){
@@ -45,7 +46,15 @@ function update(){
         //updatePhysTrap(masses);
     }
     
+    let dist = Math.sqrt(((masses[0][0].pos[0]-masses[0][1].pos[0])**2)+((masses[0][0].pos[1]-masses[0][1].pos[1])**2));
+    let fBrut = -k*(dist-(masses[0][0].r0+masses[0][1].r0));
+    
+    console.log(masses[0][10].pos);
+
     updateDraw(masses);
+    noStroke();
+    fill('green');
+    circle(masses[0][10].pos[0], masses[0][10].pos[1], 8);
 }
 //---------------------------------------------------------
 function resetCanvas(){
@@ -113,10 +122,10 @@ function updateForces(masses){
             
             for(let i=-1; i<2; i++){
                 for(let j=-1; j<2; j++){
-                    masses[x][y].addForcePesanteur(); //   PESANTEUR
+                    //masses[x][y].addForcePesanteur(); //   PESANTEUR
 
                     if(x+i<masses.length && x+i>=0 && y+j<masses[0].length && y+j>=0 && (i!=0 || j!=0)){
-                        masses[x][y].addForceDamping(masses[x+i][y+j]); //    DAMPING 
+                        //masses[x][y].addForceDamping(masses[x+i][y+j]); //    DAMPING 
                         
                         if((i+j)%2 == 0){
                             masses[x][y].addForceRaideurDiag(masses[x+i][y+j]); //RAIDEUR DIAG
@@ -212,7 +221,7 @@ function updatePhys(masses){
             for(let i=-1; i<2; i++){
                 for(let j=-1; j<2; j++){
                     if(x+i<masses.length && x+i>=0 && y+j<masses[0].length && y+j>=0 && (i!=0 || j!=0)){
-                        //masses[x][y].addForceDamping(masses[x+i][y+j]); //    DAMPING 
+                        masses[x][y].addForceDamping(masses[x+i][y+j]); //    DAMPING 
                         
                         if((i+j)%2 == 0){
                             masses[x][y].addForceRaideurDiag(masses[x+i][y+j]); //RAIDEUR DIAG
@@ -221,15 +230,21 @@ function updatePhys(masses){
                             masses[x][y].addForceRaideur(masses[x+i][y+j]); //RAIDEUR
                         }
                     }
-
                 }
             }
-
-            masses[x][y].v = [integRect(masses[x][y].v[0], (masses[x][y].f[0]/masses[x][y].mass), dt), integRect(masses[x][y].v[1], (masses[x][y].f[1]/masses[x][y].mass), dt)]; // update vitesse
-            masses[x][y].checkCollision();
-            masses[x][y].pos = [integRect(masses[x][y].pos[0], masses[x][y].v[0], dt), integRect(masses[x][y].pos[1], masses[x][y].v[1], dt)];
         }
     }
+    for (let x=0; x<masses.length; x++){
+        for (let y=0; y<masses[0].length; y++){
+            masses[x][y].v = [integRect(masses[x][y].v[0], (masses[x][y].f[0]/masses[x][y].mass), dt), integRect(masses[x][y].v[1], (masses[x][y].f[1]/masses[x][y].mass), dt)]; // update vitesse
+            //masses[x][y].v = [masses[x][y].v[0] + (masses[x][y].f[0]/masses[x][y].mass)*dt, masses[x][y].v[1] + (masses[x][y].f[1]/masses[x][y].mass)*dt];
+            masses[x][y].checkCollision();
+            masses[x][y].pos = [integRect(masses[x][y].pos[0], masses[x][y].v[0], dt), integRect(masses[x][y].pos[1], masses[x][y].v[1], dt)];
+            //masses[x][y].pos = [masses[x][y].pos[0] + masses[x][y].v[0]*dt, masses[x][y].pos[1] + masses[x][y].v[1]*dt];
+            
+        }
+    }
+        
     
 }
 
