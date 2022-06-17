@@ -1,15 +1,20 @@
 class Mass{
     constructor(x,y){
-        this.mass = 0.1;
+        this.mass = 1;
         this.pos = [x+Math.random()*factModifRand-factModifRand,y+Math.random()*factModifRand-factModifRand];
         this.r = 5;
-        this.r0 = 10+Math.random()*factModifRand/3-factModifRand/3;
+        this.r0 = 11+Math.random()*factModifRand/3-factModifRand/3;
         this.r0diag = Math.sqrt(2*(this.r0**2));
         this.v=[30, 0];
         this.f=[0,0];
-        this.savePos = [0,0];
+        this.a=[0,0];
+        this.savePos =[0,0];
         this.saveV = [0,0];
-        this.saveF = [0,0];
+        this.saveA = [0,0];
+        this.save2Pos =[0,0];
+        this.save2V = [0,0];
+        this.save2A = [0,0];
+        
     }
 
     initialiseMass(){
@@ -18,10 +23,14 @@ class Mass{
         circle(this.pos[0], this.pos[1], this.r);
     }
 
+    updateAccel(){
+        this.a = [this.f[0]/this.mass, this.f[1]/this.mass];
+    }
+
     addForceRaideur(mass2){
         let dist = Math.sqrt(((this.pos[0]-mass2.pos[0])**2)+((this.pos[1]-mass2.pos[1])**2));
         let alpha;
-        if(dist > 0.1){
+        if(dist > 0.001){
             alpha = asin((mass2.pos[1]-this.pos[1])/dist);
         }
         else{
@@ -42,7 +51,7 @@ class Mass{
     addForceRaideurDiag(mass2){
         let dist = Math.sqrt(((this.pos[0]-mass2.pos[0])**2)+((this.pos[1]-mass2.pos[1])**2));
         let alpha;
-        if(dist > 0.1){
+        if(dist > 0.001){
             alpha = asin((mass2.pos[1]-this.pos[1])/dist);
         }
         else{
@@ -60,7 +69,7 @@ class Mass{
     }
 
     addForceDamping(mass2){
-        if((this.v[0]-mass2.v[0])**2  + (this.v[1]-mass2.v[1])**2 > 0.0001){
+        if((this.v[0]-mass2.v[0])**2  + (this.v[1]-mass2.v[1])**2 > 0.001){
             this.f[0] -= kd*(this.v[0]-mass2.v[0]);
             this.f[1] -= kd*(this.v[1]-mass2.v[1]);
         } 
@@ -90,6 +99,13 @@ class Mass{
     save(){
         this.savePos = this.pos;
         this.saveV = this.v;
-        this.saveF = this.f;
+        this.saveA = this.a;
+    }
+
+    save2(){
+        this.save2Pos = this.savepos;
+        this.save2V = this.saveV;
+        this.save2A = this.saveA;
+
     }
 }
