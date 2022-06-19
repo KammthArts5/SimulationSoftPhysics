@@ -2,18 +2,18 @@ const floorLevel = 300;
 const heightCanvas = 1000;
 const lengthCanvas = 1500;
 
-const fr = 200; //frameRate
+const fr = 1000; //frameRate
 const dt = 1/fr;
 
 //-------------------------------------------------------------------------------
-const k = 200;
-const kd = 5;
+const k = 500;
+const kd = 4;
 const g = 9.8;
 
-const factModifRand = 0;
-const facteurDecoll = 5;
-const facteurFrott = 40;
-const vitesseSim = 50;
+const factModifRand = 2;
+const facteurDecoll = 100;
+const facteurFrott = 200;
+const vitesseSim = 100;
 //-----------------------------------------------------------------------------
 
 let masses;
@@ -29,6 +29,7 @@ function setup(){
     masses = createRectObject(50,0,6,25);
     drawBonds(masses);
     drawMasses(masses);
+    masses[0][0].v[0] = 100;
 
 }
 
@@ -48,13 +49,7 @@ function update(){
         //updateIntegTrap(masses);
         updateIntegSimpson(masses)
     }
-        
-    console.log(masses[0][10].pos);
-
     updateDraw(masses);
-    noStroke();
-    fill('green');
-    circle(masses[0][10].pos[0], masses[0][10].pos[1], 8);
 }
 //---------------------------------------------------------
 function resetCanvas(){

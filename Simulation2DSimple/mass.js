@@ -3,9 +3,9 @@ class Mass{
         this.mass = 1;
         this.pos = [x+Math.random()*factModifRand-factModifRand,y+Math.random()*factModifRand-factModifRand];
         this.r = 5;
-        this.r0 = 11+Math.random()*factModifRand/3-factModifRand/3;
+        this.r0 = 10+Math.random()*factModifRand/3-factModifRand/3;
         this.r0diag = Math.sqrt(2*(this.r0**2));
-        this.v=[30, 0];
+        this.v=[30, 90];
         this.f=[0,0];
         this.a=[0,0];
         this.savePos =[0,0];
@@ -86,7 +86,7 @@ class Mass{
     checkCollision(){
         if(this.pos[1] >= heightCanvas - floorLevel){
             this.pos[1] = heightCanvas - floorLevel;
-            if (Math.abs(this.v[1] + Math.abs(this.v[1])) > 0.01){
+            if (Math.abs(this.v[1] + Math.abs(this.v[1])) > 0.001){
                 this.v[1] *= -1;
                 this.v[1] *= (1-dt*facteurDecoll);
                 this.v[0] *= (1-dt*facteurFrott);
