@@ -83,7 +83,7 @@ class Mass{
 
     }
 
-    checkCollision(){
+    checkCollisionSol(){
         if(this.pos[1] >= heightCanvas - floorLevel){
             this.pos[1] = heightCanvas - floorLevel;
             if (Math.abs(this.v[1] + Math.abs(this.v[1])) > 0.01){
@@ -91,7 +91,7 @@ class Mass{
                 this.v[1] *= (1-dt*facteurDecoll);
                 this.v[0] *= (1-dt*facteurFrott);
             }
-            
+            //à modifier avec les formules de continuité (cf youtube et le report pdf)
             
         }
     }
@@ -107,5 +107,14 @@ class Mass{
         this.save2V = this.saveV;
         this.save2A = this.saveA;
 
+    }
+
+    checkCollision(mass2){
+        let dist = Math.sqrt(((this.pos[0]-mass2.pos[0])**2)+((this.pos[1]-mass2.pos[1])**2));
+        if(dist<(this.r+mass2.r)){
+            //retrouver valeur de v1 et v2
+            //voir comment elles évoluent et changent de sens
+            //utiliser la continuité du choc
+        }
     }
 }

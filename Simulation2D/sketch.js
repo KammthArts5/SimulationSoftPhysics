@@ -18,9 +18,6 @@ const vitesseSim = 50;
 
 let masses;
 
-let booltampon = false;
-
-
 function setup(){
     frameRate(fr);
     createCanvas(lengthCanvas, heightCanvas);
@@ -151,7 +148,7 @@ function updateInteg(masses){
         for (let y=0; y<masses[0].length; y++){
             masses[x][y].updateAccel(); //update acceleration (F/m)
             masses[x][y].v = integRectVect(masses[x][y].v, masses[x][y].a, dt); // Update vitesse
-            masses[x][y].checkCollision();
+            masses[x][y].checkCollisionSol();
             masses[x][y].pos = integRectVect(masses[x][y].pos, masses[x][y].v, dt); //update position
         }
     }  
@@ -164,7 +161,7 @@ function updateIntegTrap(masses){
             masses[x][y].save();
             masses[x][y].updateAccel(); //update acceleration (F/m)
             masses[x][y].v = integTrapezeVect(masses[x][y].v, masses[x][y].a, masses[x][y].saveA, dt); // Update vitesse
-            masses[x][y].checkCollision();
+            masses[x][y].checkCollisionSol();
             masses[x][y].pos = integTrapezeVect(masses[x][y].pos, masses[x][y].v, masses[x][y].saveV, dt); //update position
         }
     }
@@ -178,7 +175,7 @@ function updateIntegSimpson(masses){
             masses[x][y].save();
             masses[x][y].updateAccel(); //update acceleration (F/m)
             masses[x][y].v = integSimpsonVect(masses[x][y].v, masses[x][y].save2A, masses[x][y].saveA, masses[x][y].a, dt); // Update vitesse
-            masses[x][y].checkCollision();
+            masses[x][y].checkCollisionSol();
             masses[x][y].pos = integSimpsonVect(masses[x][y].pos, masses[x][y].save2V, masses[x][y].saveV, masses[x][y].v, dt); //update position
         }
     }
