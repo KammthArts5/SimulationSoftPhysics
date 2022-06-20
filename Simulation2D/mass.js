@@ -1,95 +1,76 @@
 class Mass{
     constructor(x,y){
-        this.mass = 1;
-        this.pos = [x+Math.random()*factModifRand-factModifRand,y+Math.random()*factModifRand-factModifRand];
+        this.mass = 0.1;
+        this.pos = createVector(x+random(-factModifRand, factModifRand), y+random(-factModifRand,factModifRand));
         this.r = 5;
-        this.r0 = 11+Math.random()*factModifRand/3-factModifRand/3;
-        this.r0diag = Math.sqrt(2*(this.r0**2));
-        this.v=[30, 0];
-        this.f=[0,0];
-        this.a=[0,0];
-        this.savePos =[0,0];
-        this.saveV = [0,0];
-        this.saveA = [0,0];
-        this.save2Pos =[0,0];
-        this.save2V = [0,0];
-        this.save2A = [0,0];
+        this.r0 = 10+Math.random()*factModifRand/3-factModifRand/3;
+        this.r0diag = createVector(this.r0,this.r0).mag();
+        this.v = createVector(0,0);
+        this.f=createVector(0,0);
+        this.a=createVector(0,0);
+
+        this.savePos =createVector(0,0);
+        this.saveV = createVector(0,0);
+        this.saveA = createVector(0,0);
+        this.save2Pos =createVector(0,0);
+        this.save2V = createVector(0,0);
+        this.save2A = createVector(0,0);
         
     }
 
     initialiseMass(){
         noStroke();
         fill('red');
-        circle(this.pos[0], this.pos[1], this.r);
+        circle(this.pos.x, this.pos.y, this.r);
     }
 
     updateAccel(){
-        this.a = [this.f[0]/this.mass, this.f[1]/this.mass];
+        this.a = p5.Vector.div(this.f,this.mass);
     }
 
     addForceRaideur(mass2){
-        let dist = Math.sqrt(((this.pos[0]-mass2.pos[0])**2)+((this.pos[1]-mass2.pos[1])**2));
-        let alpha;
-        if(dist > 0.001){
-            alpha = asin((mass2.pos[1]-this.pos[1])/dist);
-        }
-        else{
-            alpha = 0;
-        }
-        let fBrut = -k*(dist-(this.r0+mass2.r0));
+        let posRel = p5.Vector.sub(mass2.pos,this.pos);
+        let temp = posRel.mag()-(this.r0+mass2.r0);
+        let fact = abs(k*(temp));
+        posRel.setMag(fact);
 
-
-        if(this.pos[0]< mass2.pos[0]){
-            this.f[0] -= Math.cos(alpha)*fBrut;
+        if(temp<0){
+            posRel.rotate(PI);
         }
-        else{
-            this.f[0] += Math.cos(alpha)*fBrut;
-        }
-        this.f[1] -= Math.sin(alpha)*fBrut;
     }
 
     addForceRaideurDiag(mass2){
-        let dist = Math.sqrt(((this.pos[0]-mass2.pos[0])**2)+((this.pos[1]-mass2.pos[1])**2));
-        let alpha;
-        if(dist > 0.001){
-            alpha = asin((mass2.pos[1]-this.pos[1])/dist);
-        }
-        else{
-            alpha = 0;
-        }
-        let fBrut = -k*(dist-(this.r0diag+mass2.r0diag));
+        let posRel = p5.Vector.sub(mass2.pos,this.pos);
+        let temp = posRel.mag()-(this.r0diag+mass2.r0diag);
+        let fact = abs(k*(temp));
+        posRel.setMag(fact);
 
-        if(this.pos[0]< mass2.pos[0]){
-            this.f[0] -= Math.cos(alpha)*fBrut;
+        if(temp<0){
+            posRel.rotate(PI);
         }
-        else{
-            this.f[0] += Math.cos(alpha)*fBrut;
-        }
-        this.f[1] -= Math.sin(alpha)*fBrut;
+
+        this.f.add(posRel);
     }
 
     addForceDamping(mass2){
-        if((this.v[0]-mass2.v[0])**2  + (this.v[1]-mass2.v[1])**2 > 0.001){
-            this.f[0] -= kd*(this.v[0]-mass2.v[0]);
-            this.f[1] -= kd*(this.v[1]-mass2.v[1]);
-        } 
-        
+        let diffVit = p5.Vector.sub(mass2.v, this.v);
+
+        diffVit.mult(kd);
+        this.f.add(diffVit);
     }
 
     addForcePesanteur(){
-        if (this.pos[1]<= heightCanvas - floorLevel){
-            this.f[1] += this.mass*g;  
-        }
-
+        let p = createVector(0,this.mass*g);
+        this.f.add(p);
     }
 
     checkCollisionSol(){
-        if(this.pos[1] >= heightCanvas - floorLevel){
-            this.pos[1] = heightCanvas - floorLevel;
-            if (Math.abs(this.v[1] + Math.abs(this.v[1])) > 0.01){
-                this.v[1] *= -1;
-                this.v[1] *= (1-dt*facteurDecoll);
-                this.v[0] *= (1-dt*facteurFrott);
+        if(this.pos.y >= heightCanvas - floorLevel){
+            this.pos.y = heightCanvas - floorLevel;
+            if (abs(this.v.y + Math.abs(this.v.y)) > 0.1){
+                this.v.y *= -1;
+                this.v.y *= (1-dt*facteurDecoll);
+                this.v.x *= (1-dt*facteurFrott);
             }
             //à modifier avec les formules de continuité (cf youtube et le report pdf)
             
@@ -110,7 +91,7 @@ class Mass{
     }
 
     checkCollision(mass2){
-        let dist = Math.sqrt(((this.pos[0]-mass2.pos[0])**2)+((this.pos[1]-mass2.pos[1])**2));
+        let dist = this.pos.dist(mass2.pos);
         if(dist<(this.r+mass2.r)){
             //retrouver valeur de v1 et v2
             //voir comment elles évoluent et changent de sens

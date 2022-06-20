@@ -13,9 +13,9 @@ function integSimpson(fx,fprimA, fprimMilieu, fprimB, dt){
 }
 
 
-//Methodes pour les vecteurs
+//Methodes pour les listes
 
-function integRectVect(fx, fprim, dt){
+function integRectList(fx, fprim, dt){
     let temp =[];
     for (let x=0; x<fx.length; x++){
         temp.push(integRect(fx[x],fprim[x], dt));
@@ -23,7 +23,7 @@ function integRectVect(fx, fprim, dt){
     return temp;
 }
 
-function integTrapezeVect(fx, fprimA, fprimB, dt){
+function integTrapezeList(fx, fprimA, fprimB, dt){
     let temp =[];
     for (let x=0; x<fx.length; x++){
         temp.push(integTrapeze(fx[x], fprimA[x], fprimB[x], dt));
@@ -31,10 +31,29 @@ function integTrapezeVect(fx, fprimA, fprimB, dt){
     return temp;
 }
 
-function integSimpsonVect(fx, fprimA, fprimMilieu, fprimB, dt){
+function integSimpsonList(fx, fprimA, fprimMilieu, fprimB, dt){
     let temp =[];
     for (let x=0; x<fx.length; x++){
         temp.push(integSimpson(fx[x], fprimA[x], fprimMilieu[x], fprimB[x], dt));
     }
     return temp;
+}
+
+//Méthodes pour les vecteurs p5
+
+function integRectVect(fx,fprim,dt){
+    fx.add(p5.Vector.mult(fprim,dt));
+}
+
+function integTrapezeVect(fx,fprimA,fprimB, dt){
+    let temp = createVector(p5.Vector.add(fprimA,fprimB));
+    temp.mult(0.5*dt);
+    fx.add(temp);
+}
+
+function integSimpsonVect(fx, fprimA, fprimMilieu, fprimB, dt){
+    let temp = createVector(p5.Vector.add(fprimA,fprimB));
+    temp.add(p5.Vector.mult(fprimMilieu,4));
+    temp.mult(dt/6);
+    fx.add(temp);
 }
