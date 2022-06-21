@@ -2,18 +2,18 @@ const floorLevel = 300;
 const heightCanvas = 1000;
 const lengthCanvas = 1500;
 
-const fr = 200; //frameRate
+const fr = 1000; //frameRate
 const dt = 1/fr;
 
 //-------------------------------------------------------------------------------
-const k = 1000;
-const kd = 1;
+const k = 10;
+const kd = 0.1;
 const g = 9.8;
 
-const factModifRand = 0;
+const factModifRand = 3;
 const facteurDecoll = 0;
 const facteurFrott = 0;
-const vitesseSim = 10;
+const vitesseSim = 40;
 //-----------------------------------------------------------------------------
 
 let masses;
@@ -41,12 +41,14 @@ function update(){
     for(let i = 0; i<vitesseSim; i++){
         updateForces(masses);
 
-        updateInteg(masses);
-        //updateIntegTrap(masses);
-        //updateIntegSimpson(masses)
+        updateAllInteg(masses);
+        //updateAllIntegTrap(masses);
+        //updateAllIntegSimpson(masses)
     }
 
     updateDraw(masses);
+
+    console.log
 }
 //---------------------------------------------------------
 function resetCanvas(){
@@ -77,7 +79,7 @@ function createRectObject(x,y,n,m){
 
 function drawBonds(masses){
     stroke('white');
-    strokeWeight(3);
+    strokeWeight(1);
     for (let i=0; i<masses.length; i++){
         for (let j=0; j<masses[0].length; j++){
             if(i+1<masses.length){
@@ -102,7 +104,7 @@ function drawMasses(masses){
 function updateDraw(masses){
     resetCanvas();
     drawBonds(masses);
-    //drawMasses(masses);
+    drawMasses(masses);
 }
 
 // ----------- CALCULS PHYSIQUE -----------
@@ -139,40 +141,28 @@ function updateForces(masses){
 
 //---------------------UPDADE VARIABLES PHYS ------------------------------
 
-function updateInteg(masses){
+function updateAllInteg(masses){
     for (let x=0; x<masses.length; x++){
         for (let y=0; y<masses[0].length; y++){
-            masses[x][y].updateAccel(); //update acceleration (F/m)
-            integRectVect(masses[x][y].v, masses[x][y].a, dt); // Update vitesse
-            masses[x][y].checkCollisionSol();
-            integRectVect(masses[x][y].pos, masses[x][y].v, dt); //update position
+            masses[x][y].updateInteg();
         }
     }  
 }
 
-function updateIntegTrap(masses){
+function updateAllIntegTrap(masses){
 
     for (let x=0; x<masses.length; x++){
         for (let y=0; y<masses[0].length; y++){
-            masses[x][y].save();
-            masses[x][y].updateAccel(); //update acceleration (F/m)
-            integTrapezeVect(masses[x][y].v, masses[x][y].a, masses[x][y].saveA, dt); // Update vitesse
-            masses[x][y].checkCollisionSol();
-            integTrapezeVect(masses[x][y].pos, masses[x][y].v, masses[x][y].saveV, dt); //update position
+            masses[x][y].updateIntegTrap();
         }
     }
     
 }
 
-function updateIntegSimpson(masses){
+function updateAllIntegSimpson(masses){
     for (let x=0; x<masses.length; x++){
         for (let y=0; y<masses[0].length; y++){
-            masses[x][y].save2();
-            masses[x][y].save();
-            masses[x][y].updateAccel(); //update acceleration (F/m)
-            integSimpsonVect(masses[x][y].v, masses[x][y].save2A, masses[x][y].saveA, masses[x][y].a, dt); // Update vitesse
-            masses[x][y].checkCollisionSol();
-            integSimpsonVect(masses[x][y].pos, masses[x][y].save2V, masses[x][y].saveV, masses[x][y].v, dt); //update position
+           masses[x][y].updateIntegSimpson();
         }
     }
 }

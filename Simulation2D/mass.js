@@ -5,7 +5,7 @@ class Mass{
         this.r = 5;
         this.r0 = 10+Math.random()*factModifRand/3-factModifRand/3;
         this.r0diag = createVector(this.r0,this.r0).mag();
-        this.v = createVector(0,0);
+        this.v = createVector(20,0);
         this.f=createVector(0,0);
         this.a=createVector(0,0);
 
@@ -21,7 +21,7 @@ class Mass{
     initialiseMass(){
         noStroke();
         fill('red');
-        circle(this.pos.x, this.pos.y, this.r);
+        circle(this.pos.x, this.pos.y, this.r*2);
     }
 
     updateAccel(){
@@ -37,6 +37,8 @@ class Mass{
         if(temp<0){
             posRel.rotate(PI);
         }
+
+        this.f.add(posRel);
     }
 
     addForceRaideurDiag(mass2){
@@ -65,13 +67,11 @@ class Mass{
     }
 
     checkCollisionSol(){
-        if(this.pos.y >= heightCanvas - floorLevel){
-            this.pos.y = heightCanvas - floorLevel;
-            if (abs(this.v.y + Math.abs(this.v.y)) > 0.1){
-                this.v.y *= -1;
-                this.v.y *= (1-dt*facteurDecoll);
-                this.v.x *= (1-dt*facteurFrott);
-            }
+        if(this.pos.y+this.r >= heightCanvas - floorLevel){
+            this.v.y *= -1;
+            this.v.y *= (1-dt*facteurDecoll);
+            this.v.x *= (1-dt*facteurFrott);
+            this.pos.y -= 2*(this.pos.y-(heightCanvas - floorLevel-this.r));
             //à modifier avec les formules de continuité (cf youtube et le report pdf)
             
         }
@@ -97,5 +97,29 @@ class Mass{
             //voir comment elles évoluent et changent de sens
             //utiliser la continuité du choc
         }
+    }
+
+    updateInteg(){
+            this.updateAccel(); //update acceleration (F/m)
+            integRectVect(this.v, this.a, dt); // Update vitesse
+            integRectVect(this.pos, this.v, dt); //update position
+            this.checkCollisionSol();
+    }
+
+    updateIntegTrapeze(){
+        this.save();
+            this.updateAccel(); //update acceleration (F/m)
+            integTrapezeVect(this.v, this.a, this.saveA, dt); // Update vitesse
+            integTrapezeVect(this.pos, this.v, this.saveV, dt); //update position
+            this.checkCollisionSol();
+    }
+
+    updateIntegSimpson(){
+        this.save2();
+        this.save();
+        this.updateAccel(); //update acceleration (F/m)
+        integSimpsonVect(this.v, this.save2A, this.saveA, this.a, dt); // Update vitesse
+        integSimpsonVect(this.pos, this.save2V, this.saveV, this.v, dt); //update position
+        this.checkCollisionSol();
     }
 }
