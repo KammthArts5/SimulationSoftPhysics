@@ -1,6 +1,6 @@
 class Mass{
     constructor(x,y){
-        this.mass = 0.1;
+        this.mass = 0.3;
         this.pos = createVector(x+random(-factModifRand, factModifRand), y+random(-factModifRand,factModifRand));
         this.r = 5;
         this.r0 = 10+Math.random()*factModifRand/3-factModifRand/3;
@@ -69,8 +69,8 @@ class Mass{
     checkCollisionSol(){
         if(this.pos.y+this.r >= heightCanvas - floorLevel){
             this.v.y *= -1;
-            this.v.y *= (1-dt*facteurDecoll);
-            this.v.x *= (1-dt*facteurFrott);
+            this.v.y *= (1-facteurDecoll/100);
+            this.v.x *= (1-facteurFrott/100);
             this.pos.y -= 2*(this.pos.y-(heightCanvas - floorLevel-this.r));
             //à modifier avec les formules de continuité (cf youtube et le report pdf)
             

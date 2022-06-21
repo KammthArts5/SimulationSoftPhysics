@@ -6,13 +6,13 @@ const fr = 1000; //frameRate
 const dt = 1/fr;
 
 //-------------------------------------------------------------------------------
-const k = 10;
-const kd = 0.1;
+const k = 90;
+const kd = 0.5;
 const g = 9.8;
 
-const factModifRand = 3;
-const facteurDecoll = 0;
-const facteurFrott = 0;
+const factModifRand = 6;
+const facteurDecoll = 0.1;
+const facteurFrott = 1;
 const vitesseSim = 40;
 //-----------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ function setup(){
     createCanvas(lengthCanvas, heightCanvas);
     resetCanvas();
 
-    masses = createRectObject(200,100,6,20);
+    masses = createRectObject(200,100,5,20);
     drawBonds(masses);
     drawMasses(masses);
 
