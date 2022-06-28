@@ -7,7 +7,7 @@ const dt = 1/fr;
 
 //-------------------------------------------------------------------------------
 const k = 90;
-const kd = 0.5;
+const kd = 0.8;
 const g = 9.8;
 
 const factModifRand = 6;
@@ -17,6 +17,8 @@ const vitesseSim = 40;
 //-----------------------------------------------------------------------------
 
 let masses;
+
+let pause = false;
 
 function setup(){
     frameRate(fr);
@@ -30,11 +32,19 @@ function setup(){
 }
 
 function draw(){
-    update();
+    if(!pause){
+        update();
+    }
 }
 
 function mouseClicked(){
     update();
+}
+
+function keyPressed(){ //FONCTION PAUSE
+    if(key == 'p'){
+        pause = !pause;
+    }
 }
 
 function update(){
@@ -145,6 +155,14 @@ function updateAllInteg(masses){
     for (let x=0; x<masses.length; x++){
         for (let y=0; y<masses[0].length; y++){
             masses[x][y].updateInteg();
+
+            for(let i=-1; i<2; i++){
+                for(let j=-1; j<2; j++){
+                    if(x+i<masses.length && x+i>=0 && y+j<masses[0].length && y+j>=0 && (i!=0 || j!=0)){
+                        masses[x][y].checkCollision(masses[x+i][y+j]);
+                    }
+                }
+            }
         }
     }  
 }

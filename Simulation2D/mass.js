@@ -91,11 +91,38 @@ class Mass{
     }
 
     checkCollision(mass2){
-        let dist = this.pos.dist(mass2.pos);
-        if(dist<(this.r+mass2.r)){
-            //retrouver valeur de v1 et v2
-            //voir comment elles évoluent et changent de sens
-            //utiliser la continuité du choc
+        if(this.pos.dist(mass2.pos)<(this.r+mass2.r)){
+            let d = dist
+            let eps1 = 0.00001;
+            if(this.pos.x != 0){
+                eps1 = this.pos.x;
+            }
+            let eps2 = 0.00001;
+            if(mass2.pos.x != 0){
+                eps2 = mass2.pos.x;
+            }
+
+            let p1 = this.v.y/eps1;
+            let p2 = mass2.v.y/eps2;
+
+
+            /*
+
+            AJOUTER LA SUITE
+
+            */
+
+
+
+
+            let diffPos1 = p5.Vector.sub(this.pos, mass2.pos);
+            let diffVit1 = p5.Vector.sub(this.pos, mass2.pos);
+            let temp = diffPos1;
+            let factTemp = diffVit1.dot(diffPos1) / diffPos1.magSq();
+            factTemp *= -2*mass2.mass/(this.mass + mass2.mass);
+            temp.mult(factTemp);
+
+            this.v.add(temp);
         }
     }
 
