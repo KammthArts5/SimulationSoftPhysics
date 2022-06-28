@@ -18,7 +18,7 @@ const vitesseSim = 40;
 
 let masses;
 
-let pause = false;
+let pauseState = false;
 
 function setup(){
     frameRate(fr);
@@ -32,7 +32,7 @@ function setup(){
 }
 
 function draw(){
-    if(!pause){
+    if(!pauseState){
         update();
     }
 }
@@ -41,10 +41,20 @@ function mouseClicked(){
     update();
 }
 
-function keyPressed(){ //FONCTION PAUSE
+function keyPressed(){ //FONCTION pauseState
     if(key == 'p'){
-        pause = !pause;
+        pause();    
     }
+}
+
+function pause(){
+    pauseState = !pauseState;
+
+    fill('green');
+    textFont('Helvetica');
+    textSize(120);
+    textAlign(CENTER);
+    text("PAUSE", width/2, height/2);
 }
 
 function update(){
